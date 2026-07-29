@@ -85,9 +85,9 @@ export function RegistrationForm({ mode }: Props) {
     <div>
       {mode === "waitlist" && (
         <p className="mb-6 rounded-md bg-white px-4 py-3 text-[0.9rem] text-sound-900 ring-1 ring-dusk-400/50">
-          <strong className="font-semibold">The boat is full.</strong> You can
-          still sign up — you&apos;ll go on the waitlist in order, and I&apos;ll
-          text you if a spot opens.
+          <strong className="font-semibold">The boat is full.</strong>{" "}
+          You can still sign up — you&apos;ll go on the waitlist in order, and
+          I&apos;ll text you if a spot opens.
         </p>
       )}
 
@@ -305,7 +305,6 @@ function FieldError({ id, message }: { id: string; message: string }) {
 }
 
 function ClosedNotice() {
-  const firstName = EVENT.contact.name.split(" ")[0];
   return (
     <div className="max-w-xl rounded-md bg-white px-5 py-5 ring-1 ring-shoal-400/25">
       <h3 className="font-display text-xl font-semibold text-sound-900">
@@ -313,14 +312,14 @@ function ClosedNotice() {
       </h3>
       <p className="mt-2 text-[0.95rem] leading-relaxed text-sound-500">
         We closed the list on {EVENT.rsvpDeadlineLabel} so the boat could get a
-        final count. If you still want to come, text {firstName} at{" "}
+        final count. If you still want to come, text me at{" "}
         <a
           href={`sms:${EVENT.contact.mobile.replace(/[^\d+]/g, "")}`}
           className="font-medium text-sound-900 underline decoration-shoal-400 underline-offset-2"
         >
           {EVENT.contact.mobile}
         </a>{" "}
-        and he&apos;ll see what he can do.
+        and I&apos;ll see what I can do.
       </p>
     </div>
   );

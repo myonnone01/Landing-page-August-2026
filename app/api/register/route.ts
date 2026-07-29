@@ -1,5 +1,5 @@
 import { EVENT, capacity, registrationClosed } from "@/lib/event";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { REGISTER_LIMIT, checkRateLimit, clientIp } from "@/lib/rate-limit";
 import {
   fieldErrorsFrom,
   registrationSchema,
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   //    fill the boat.
   let limit;
   try {
-    limit = await checkRateLimit(request);
+    limit = await checkRateLimit(REGISTER_LIMIT, clientIp(request.headers));
   } catch (error) {
     console.error("[register] rate limit check failed:", error);
     return Response.json(

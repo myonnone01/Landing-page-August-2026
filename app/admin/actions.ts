@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import {
   ADMIN_COOKIE,
   cookieOptions,
@@ -9,6 +9,11 @@ import {
   issueToken,
   passcodeIsCorrect,
 } from "@/lib/admin-auth";
+import {
+  ADMIN_LOGIN_LIMIT,
+  checkRateLimit,
+  clientIp,
+} from "@/lib/rate-limit";
 import { deleteRegistration } from "@/lib/registrations";
 
 export type SignInState = { error: string | null };
@@ -21,6 +26,23 @@ export async function signIn(
 
   if (!attempt) {
     return { error: "Enter the passcode." };
+  }
+
+  // A single shared secret is the weakest part of this app. Rate limiting the
+  // form is what stops it from being brute-forceable.
+  try {
+    const limit = await checkRateLimit(
+      ADMIN_LOGIN_LIMIT,
+      clientIp(await headers()),
+    );
+    if (!limit.allowed) {
+      return {
+        error: `Too many attempts. Wait ${limit.retryAfterMinutes} minutes and try again.`,
+      };
+    }
+  } catch (error) {
+    console.error("[admin] rate limit check failed:", error);
+    return { error: "Couldn't reach the database. Try again in a minute." };
   }
 
   if (!passcodeIsCorrect(attempt)) {
