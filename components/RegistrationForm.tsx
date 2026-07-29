@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { EVENT } from "@/lib/event";
+import { dateLong, time } from "@/lib/format";
 
 export type FormMode = "open" | "waitlist" | "closed";
 
@@ -346,8 +347,9 @@ function Confirmation({ submitted }: { submitted: Submitted }) {
           </>
         ) : (
           <>
-            Be at {EVENT.venue} by 3:30 PM on Tuesday, August 25. The boat
-            leaves at 4:00. I&apos;ll text you the morning of with the weather.
+            Be at {EVENT.venue} by {time(EVENT.arriveBy)} on{" "}
+            {dateLong(EVENT.sailAt)}. The boat leaves at {time(EVENT.sailAt)}.
+            I&apos;ll text you the morning of with the weather.
           </>
         )}
       </p>

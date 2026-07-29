@@ -3,14 +3,15 @@ import { SounderPanel } from "@/components/SounderPanel";
 import { SponsorBand } from "@/components/SponsorBand";
 import { EVENT, FULL_ADDRESS, capacity, registrationClosed } from "@/lib/event";
 import { dateLong, time } from "@/lib/format";
+import { confirmedHeadcount } from "@/lib/registrations";
 
-// Static pass: seats taken is hardcoded until the database lands. The shape of
-// the value is what the wired-up version will supply.
-const SEATS_TAKEN = 0;
+// "Spots left" has to be live, so the page is never served from a cache.
+export const dynamic = "force-dynamic";
 
-export default function Page() {
+export default async function Page() {
   const seats = capacity();
-  const spotsLeft = Math.max(0, seats - SEATS_TAKEN);
+  const seatsTaken = await confirmedHeadcount();
+  const spotsLeft = Math.max(0, seats - seatsTaken);
 
   const mode: FormMode = registrationClosed()
     ? "closed"
@@ -103,7 +104,9 @@ export default function Page() {
         readout={
           mode === "closed"
             ? "Registration closed"
-            : `${SEATS_TAKEN} of ${seats} seats taken`
+            : spotsLeft === 0
+              ? `Full — ${seats} of ${seats} seats taken`
+              : `${seatsTaken} of ${seats} seats taken`
         }
         id="register"
       >
