@@ -74,7 +74,7 @@ template.
 | Variable | What it does | Where its value comes from |
 | --- | --- | --- |
 | `DATABASE_URL` | Postgres connection string | Neon console → your project → *Connection Details* → pooled connection string. Locally, your own Postgres. |
-| `ADMIN_PASSCODE` | The passcode for `/admin` | You choose it. Currently `Presidio123`. Never commit it. |
+| `ADMIN_PASSCODE` | The passcode for `/admin` | You choose it. The one from the brief is set in `.env` locally; it is deliberately not written down here or in `.env.example`. |
 | `ADMIN_SESSION_SECRET` | Signs the admin session cookie | Generate with the command above. Changing it signs out anyone currently in `/admin`. |
 | `EVENT_CAPACITY` | Total seats, counting hosts | The boat's capacity. Currently `50`. |
 
@@ -111,7 +111,7 @@ It is one shared string. Specifically:
 - **It leaks permanently.** Forwarded once in a Slack message or a text, it is
   out, and it keeps working until you change it and redeploy. You will not know
   it happened.
-- **`Presidio123` is a guessable shape.** It is a dictionary word plus `123` —
+- **The current passcode is a guessable shape.** A company name plus `123` is
   exactly what a credential-guessing list tries first.
 
 What is actually in place: the passcode is compared in constant time, never
@@ -127,7 +127,7 @@ Better options, with honest effort estimates:
 
 | Option | Effort | What it buys |
 | --- | --- | --- |
-| Random passphrase instead of `Presidio123` | 2 minutes | Kills guessing. Still shared, still no identity. |
+| Random passphrase instead of the current one | 2 minutes | Kills guessing. Still shared, still no identity. |
 | A distinct passcode per person who needs access | ~1 hour | You can tell who looked, and revoke one person without disrupting others. Still a shared-secret model. |
 | Email magic links | ~half a day, no new vendor if you allow-list addresses | Real identity per viewer, revocable, nothing to leak permanently. Needs an email sender, which the brief ruled out. |
 | Google sign-in restricted to your Presidio domain | ~half a day plus an OAuth client | Proper identity, no passwords, no new vendor beyond Google. Heaviest option, and overkill for a roster that stops mattering on August 25. |
