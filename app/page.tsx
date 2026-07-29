@@ -1,65 +1,196 @@
-import Image from "next/image";
+import { RegistrationForm, type FormMode } from "@/components/RegistrationForm";
+import { SounderPanel } from "@/components/SounderPanel";
+import { SponsorBand } from "@/components/SponsorBand";
+import { EVENT, FULL_ADDRESS, capacity, registrationClosed } from "@/lib/event";
+import { dateLong, time } from "@/lib/format";
 
-export default function Home() {
+// Static pass: seats taken is hardcoded until the database lands. The shape of
+// the value is what the wired-up version will supply.
+const SEATS_TAKEN = 0;
+
+export default function Page() {
+  const seats = capacity();
+  const spotsLeft = Math.max(0, seats - SEATS_TAKEN);
+
+  const mode: FormMode = registrationClosed()
+    ? "closed"
+    : spotsLeft === 0
+      ? "waitlist"
+      : "open";
+
+  const mapsHref = `https://maps.google.com/?q=${encodeURIComponent(FULL_ADDRESS)}`;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="mx-auto w-full max-w-5xl px-5 pb-24 sm:px-8">
+      {/* ---------------------------------------------------------------- host */}
+      <header className="flex items-baseline justify-between gap-4 py-7">
+        <p className="font-display text-[1.05rem] font-bold tracking-tight text-sound-900">
+          {EVENT.host}
+        </p>
+        <p className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-shoal-400">
+          Customer event
+        </p>
+      </header>
+
+      {/* ----------------------------------------------------------- invitation */}
+      <section className="max-w-2xl pt-6 pb-12">
+        <h1 className="font-display text-[2.6rem] leading-[1.05] font-bold tracking-tight text-sound-900 sm:text-[3.5rem]">
+          Come out on the Sound with us.
+        </h1>
+        <p className="mt-6 text-[1.05rem] leading-relaxed text-sound-500">
+          {EVENT.host} is taking {EVENT.boat} out of {EVENT.venue} on{" "}
+          {dateLong(EVENT.sailAt)}. Four hours of fishing on Long Island Sound
+          with {EVENT.operator}. We bring all the gear — you just show up.
+        </p>
+        <p className="mt-4 text-[1.05rem] leading-relaxed text-sound-500">
+          If you have never done this before, that is the normal case. The mate
+          will rig your line and take the fish off the hook.
+        </p>
+      </section>
+
+      {/* --------------------------------------------- signature: the schedule */}
+      <SounderPanel />
+
+      {/* ------------------------------------------------------ the trip sheet */}
+      <Section label="Trip sheet">
+        <dl className="grid gap-x-10 gap-y-7 sm:grid-cols-2">
+          <Entry term="What’s included">
+            Every bit of the fishing gear — rods, reels, tackle and bait.
+            Nothing to rent, nothing to buy, no experience needed.
+          </Entry>
+          <Entry term="What to bring">
+            Soft-soled shoes, a layer for when the sun drops, sunglasses and
+            sunscreen. It gets cooler on the water than you expect.
+          </Entry>
+          <Entry term="Weather">
+            We sail rain or shine. Unsafe conditions are the only thing that
+            cancels this, and if that happens I will text you.
+          </Entry>
+          <Entry term="Guests">
+            You can bring one guest. Add their name when you sign up so the mate
+            knows who is aboard.
+          </Entry>
+        </dl>
+      </Section>
+
+      {/* ---------------------------------------------------------------- where */}
+      <Section label="Where">
+        <p className="font-display text-2xl leading-snug font-semibold text-sound-900">
+          {EVENT.venue}
+        </p>
+        <p className="mt-2 text-[1rem] leading-relaxed text-sound-500">
+          {EVENT.street}
+          <br />
+          {EVENT.city}, {EVENT.state} {EVENT.zip}
+        </p>
+        <a
+          href={mapsHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-block font-sans text-[0.9rem] font-medium text-sound-900 underline decoration-shoal-400 underline-offset-4 hover:decoration-sound-900"
+        >
+          Open in Maps
+        </a>
+        <p className="mt-6 max-w-md text-[0.9rem] leading-relaxed text-shoal-400">
+          Give yourself time to park and find the dock. Being on time here means{" "}
+          {time(EVENT.arriveBy)}, not {time(EVENT.sailAt)}.
+        </p>
+      </Section>
+
+      {/* ------------------------------------------------------------- register */}
+      <Section
+        label="Save your spot"
+        readout={
+          mode === "closed"
+            ? "Registration closed"
+            : `${SEATS_TAKEN} of ${seats} seats taken`
+        }
+        id="register"
+      >
+        <RegistrationForm mode={mode} />
+      </Section>
+
+      <SponsorBand />
+
+      {/* --------------------------------------------------------------- footer */}
+      <footer className="border-t border-shoal-400/25 pt-10">
+        <p className="font-display text-[1.05rem] font-bold tracking-tight text-sound-900">
+          {EVENT.host}
+        </p>
+        <p className="mt-2 max-w-md text-[0.9rem] leading-relaxed text-shoal-400">
+          Questions, or something came up? Text or email {EVENT.contact.name}.
+        </p>
+        <p className="mt-3 font-mono text-[0.8rem] text-sound-500">
+          <a
+            href={`mailto:${EVENT.contact.email}`}
+            className="underline decoration-shoal-400 underline-offset-4 hover:decoration-sound-900"
+          >
+            {EVENT.contact.email}
+          </a>
+          <span className="px-2 text-shoal-400">·</span>
+          <a
+            href={`sms:${EVENT.contact.mobile.replace(/[^\d+]/g, "")}`}
+            className="underline decoration-shoal-400 underline-offset-4 hover:decoration-sound-900"
+          >
+            {EVENT.contact.mobile}
+          </a>
+        </p>
+      </footer>
+    </main>
+  );
+}
+
+/**
+ * The page's spine: a narrow left rail carrying a mono section label and an
+ * optional readout, with content in the wide column. The top rule doubles as a
+ * depth tick down the page.
+ */
+function Section({
+  label,
+  readout,
+  id,
+  children,
+}: {
+  label: string;
+  readout?: string;
+  id?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section
+      id={id}
+      className="grid gap-x-10 gap-y-5 border-t border-shoal-400/25 py-14 md:grid-cols-[8rem_minmax(0,1fr)]"
+    >
+      <div className="self-start md:sticky md:top-8">
+        <h2 className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-shoal-400">
+          {label}
+        </h2>
+        {readout && (
+          <p className="mt-1.5 font-mono text-[0.7rem] text-shoal-400/80">
+            {readout}
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        )}
+      </div>
+      <div>{children}</div>
+    </section>
+  );
+}
+
+function Entry({
+  term,
+  children,
+}: {
+  term: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <dt className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-sound-900">
+        {term}
+      </dt>
+      <dd className="mt-2 text-[0.95rem] leading-relaxed text-sound-500">
+        {children}
+      </dd>
     </div>
   );
 }

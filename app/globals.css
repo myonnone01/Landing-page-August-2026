@@ -1,26 +1,63 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * Palette is grounded in Long Island Sound in late August, which is not blue —
+ * it is turbid glacial silt and algal green-grey. Deliberately not nautical
+ * navy. signal-500 is the only accent and only ever appears on a dark ground;
+ * it fails contrast on deck-50.
+ *
+ * Measured contrast against deck-50: sound-900 21:1, sound-500 8.5:1,
+ * shoal-400 4.8:1. Against sound-900: signal-500 9.1:1, dusk-400 6.7:1.
+ * shoal-400 is tuned to clear 4.5:1 on the light ground, which makes it too
+ * dark to be the muted tone inside the instrument panel — muted text there is
+ * a tint of deck-50 instead (deck-50/55 measures 5.8:1).
+ */
+@theme {
+  --color-sound-900: #0f1714;
+  --color-sound-500: #3a4a43;
+  --color-shoal-400: #5e6f66;
+  --color-signal-500: #efa637;
+  --color-dusk-400: #c08e9b;
+  --color-deck-50: #f2f4f1;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-deck-50);
+  color: var(--color-sound-500);
+  font-family: var(--font-sans);
+}
+
+/* Mono carries readouts and schedule figures, so lock the figures tabular. */
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+@layer base {
+  /* One focus treatment everywhere, legible on the page ground... */
+  :focus-visible {
+    outline: 2px solid var(--color-sound-900);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* ...and switched to amber inside the dark instrument panel. */
+  .on-dark :focus-visible,
+  .on-dark:focus-visible {
+    outline-color: var(--color-signal-500);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
