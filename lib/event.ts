@@ -38,13 +38,10 @@ export const EVENT = {
 
   maxGuestsPerRegistration: 2,
 
-  // TODO(host): mobile is a placeholder — the brief left it blank. It is shown
-  // on the page and written into the .ics description. Replace before sending
-  // the URL to anyone.
   contact: {
     name: "Mike Yonnone",
     email: "mike.yonnone@gmail.com",
-    mobile: "(555) 555-0142",
+    mobile: "(203) 450-7593",
   },
 
   sponsors: [

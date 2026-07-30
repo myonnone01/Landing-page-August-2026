@@ -15,11 +15,9 @@ system is this app and one Postgres database.
 
 ## Before you send anyone the URL
 
-Three things in the brief were left blank or missing. Each is a one-line change.
-
 | What | Where | Status |
 | --- | --- | --- |
-| Host mobile number | `lib/event.ts` → `EVENT.contact.mobile` | **Placeholder** `(555) 555-0142`. Shown on the page and written into the `.ics`. |
+| Host mobile number | `lib/event.ts` → `EVENT.contact.mobile` | Set to `(203) 450-7593`. |
 | Host name and email | `lib/event.ts` → `EVENT.contact` | Defaulted to Mike Yonnone / mike.yonnone@gmail.com. Swap for a Presidio address if that should carry the invitation. |
 | Sponsor logos | `components/SponsorBand.tsx` → `SPONSORS[].src` | **Placeholders.** See [Sponsor logos](#sponsor-logos). |
 
