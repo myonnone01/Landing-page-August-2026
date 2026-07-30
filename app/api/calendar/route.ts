@@ -18,7 +18,7 @@ export async function GET() {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
       "Content-Disposition":
-        'attachment; filename="presidio-middlebank-charter.ics"',
+        'attachment; filename="cast-off-with-presidio.ics"',
       "Cache-Control": "no-store",
     },
   });
@@ -43,11 +43,11 @@ function buildIcs(): string {
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",
     // Stable UID, so re-downloading updates the entry instead of duplicating it.
-    "UID:presidio-middlebank-charter-2026-08-25@presidio.com",
+    "UID:cast-off-with-presidio-2026-08-25@presidio.com",
     `DTSTAMP:${utcStamp(new Date())}`,
     `DTSTART:${utcStamp(new Date(EVENT.arriveBy))}`,
     `DTEND:${utcStamp(new Date(EVENT.returnAt))}`,
-    `SUMMARY:${escapeText(`${EVENT.host} charter — ${EVENT.boat}`)}`,
+    `SUMMARY:${escapeText(`${EVENT.title} — ${EVENT.boat}`)}`,
     `LOCATION:${escapeText(FULL_ADDRESS)}`,
     `DESCRIPTION:${escapeText(description)}`,
     "STATUS:CONFIRMED",

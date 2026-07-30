@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" role="img" aria-label="Presidio">
+  <!-- Presidio wordmark: bold blue sans-serif with ® -->
+  <text x="8" y="50" font-family="'Arial Black', 'Segoe UI Black', 'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="52" fill="#1A88C7" letter-spacing="3">PRESIDIO</text>
+  <text x="305" y="22" font-family="Arial, Helvetica, sans-serif" font-weight="400" font-size="14" fill="#1A88C7">&#174;</text>
+</svg>

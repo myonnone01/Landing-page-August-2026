@@ -6,13 +6,10 @@ export type Registration = {
   createdAt: Date;
   fullName: string;
   company: string;
+  jobTitle: string | null;
   email: string;
-  mobile: string;
-  guestCount: number;
-  guestNames: string | null;
-  dietary: string | null;
-  charterExperience: "first_time" | "experienced" | null;
-  notes: string | null;
+  phoneNumber: string | null;
+  dietaryNeeds: string | null;
   waitlisted: boolean;
 };
 
@@ -24,13 +21,10 @@ type Row = {
   created_at: Date;
   full_name: string;
   company: string;
+  job_title: string | null;
   email: string;
-  mobile: string;
-  guest_count: number;
-  guest_names: string | null;
-  dietary: string | null;
-  charter_experience: "first_time" | "experienced" | null;
-  notes: string | null;
+  phone_number: string | null;
+  dietary_needs: string | null;
   waitlisted: boolean;
 };
 
@@ -40,13 +34,10 @@ function toRegistration(row: Row): Registration {
     createdAt: row.created_at,
     fullName: row.full_name,
     company: row.company,
+    jobTitle: row.job_title,
     email: row.email,
-    mobile: row.mobile,
-    guestCount: row.guest_count,
-    guestNames: row.guest_names,
-    dietary: row.dietary,
-    charterExperience: row.charter_experience,
-    notes: row.notes,
+    phoneNumber: row.phone_number,
+    dietaryNeeds: row.dietary_needs,
     waitlisted: row.waitlisted,
   };
 }
@@ -57,10 +48,15 @@ function nullIfBlank(value: string | undefined): string | null {
   return trimmed ? trimmed : null;
 }
 
-/** People confirmed aboard, counting guests. Excludes the waitlist. */
+/**
+ * People confirmed aboard. One seat per registration — the form no longer
+ * collects guests, so a registration is a person.
+ */
 export async function confirmedHeadcount(): Promise<number> {
-  const { rows } = await (await db()).query<{ total: string | null }>(
-    "SELECT sum(guest_count) AS total FROM registrations WHERE NOT waitlisted",
+  const { rows } = await (
+    await db()
+  ).query<{ total: string | null }>(
+    "SELECT count(*) AS total FROM registrations WHERE NOT waitlisted",
   );
   return Number(rows[0]?.total ?? 0);
 }
@@ -94,28 +90,22 @@ export async function createRegistration(
     }
 
     const { rows } = await client.query<{ total: string | null }>(
-      "SELECT sum(guest_count) AS total FROM registrations WHERE NOT waitlisted",
+      "SELECT count(*) AS total FROM registrations WHERE NOT waitlisted",
     );
     const taken = Number(rows[0]?.total ?? 0);
-
-    // A party only boards whole — if both seats don't fit, the party waits.
-    const waitlisted = taken + input.guestCount > capacity;
+    const waitlisted = taken + 1 > capacity;
 
     await client.query(
       `INSERT INTO registrations
-         (full_name, company, email, mobile, guest_count, guest_names,
-          dietary, charter_experience, notes, waitlisted)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+         (full_name, company, job_title, email, phone_number, dietary_needs, waitlisted)
+       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
       [
         input.fullName,
         input.company,
+        nullIfBlank(input.jobTitle),
         input.email,
-        input.mobile,
-        input.guestCount,
-        nullIfBlank(input.guestNames),
-        nullIfBlank(input.dietary),
-        nullIfBlank(input.charterExperience || undefined),
-        nullIfBlank(input.notes),
+        input.phoneNumber,
+        nullIfBlank(input.dietaryNeeds),
         waitlisted,
       ],
     );
@@ -132,16 +122,20 @@ export async function createRegistration(
 
 /** Newest first. The admin page re-sorts client-side. */
 export async function listRegistrations(): Promise<Registration[]> {
-  const { rows } = await (await db()).query<Row>(
-    "SELECT * FROM registrations ORDER BY created_at DESC",
+  const { rows } = await (
+    await db()
+  ).query<Row>(
+    `SELECT id, created_at, full_name, company, job_title, email,
+            phone_number, dietary_needs, waitlisted
+       FROM registrations ORDER BY created_at DESC`,
   );
   return rows.map(toRegistration);
 }
 
 /** Returns false when the id matched nothing, so the caller can say so. */
 export async function deleteRegistration(id: string): Promise<boolean> {
-  const result = await (await db()).query("DELETE FROM registrations WHERE id = $1", [
-    id,
-  ]);
+  const result = await (
+    await db()
+  ).query("DELETE FROM registrations WHERE id = $1", [id]);
   return (result.rowCount ?? 0) > 0;
 }

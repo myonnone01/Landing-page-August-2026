@@ -10,6 +10,9 @@
 const EDT_OFFSET = "-04:00";
 
 export const EVENT = {
+  /** Carried over from the previous event site, so the series reads as one. */
+  title: "Cast Off with Presidio",
+
   host: "Presidio",
   hostBlurb: "technology solutions and managed services",
 
@@ -36,7 +39,11 @@ export const EVENT = {
   rsvpClosesAt: `2026-08-15T00:00:00${EDT_OFFSET}`,
   rsvpDeadlineLabel: "Friday, August 14",
 
-  maxGuestsPerRegistration: 2,
+  /**
+   * Catering and drinks were confirmed as carrying over from last year's
+   * event, alongside the fishing gear the brief specified.
+   */
+  provided: "Catering, drinks, and all fishing gear",
 
   contact: {
     name: "Mike Yonnone",

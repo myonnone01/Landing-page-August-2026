@@ -1,7 +1,13 @@
-# Presidio × Middlebank charter
+# Cast Off with Presidio — August 25, 2026
 
 A one-page event site for a private charter fishing trip Presidio is hosting for
 customers, with a registration form and a passcode-gated roster at `/admin`.
+
+The design, palette and copy are carried over from the previous event site
+(`myonnone01/Landing-page-boat-event`) so the two read as one series — same
+navy/ocean/sand palette, Georgia display face, hero photograph of the boat, and
+"Cast Off with Presidio" title. Sponsors changed from Varonis and Spacelift to
+Komprise and Illumio.
 
 - **Boat:** The Middlebank, Middlebank Sport Fishing
 - **Where:** Captain's Cove Seaport, 1 Bostwick Ave, Bridgeport, CT 06605
@@ -19,7 +25,7 @@ system is this app and one Postgres database.
 | --- | --- | --- |
 | Host mobile number | `lib/event.ts` → `EVENT.contact.mobile` | Set to `(203) 450-7593`. |
 | Host name and email | `lib/event.ts` → `EVENT.contact` | Defaulted to Mike Yonnone / mike.yonnone@gmail.com. Swap for a Presidio address if that should carry the invitation. |
-| Sponsor logos | `public/logos/` | Both in place. |
+| Sponsor logos | `public/logos/` | Komprise and Illumio, both in place. |
 
 ---
 
@@ -76,7 +82,7 @@ Three are required; `EVENT_CAPACITY` is optional. `.env` is gitignored;
 | `DATABASE_URL` | yes | Postgres connection string | Neon console → your project → *Connection Details* → pooled connection string. Locally, your own Postgres. |
 | `ADMIN_PASSCODE` | yes | The passcode for `/admin` | You choose it. The one from the brief is set in `.env` locally; it is deliberately not written down here or in `.env.example`. |
 | `ADMIN_SESSION_SECRET` | yes | Signs the admin session cookie | Generate with the command above. Changing it signs out anyone currently in `/admin`. |
-| `EVENT_CAPACITY` | no | Total seats, counting hosts | Defaults to `50`. A missing or invalid value falls back to the default and logs, rather than taking the page down. |
+| `EVENT_CAPACITY` | no | Total seats on the boat | Defaults to `50`. A missing or invalid value falls back to the default and logs, rather than taking the page down. |
 
 If a required variable is missing, the site does not crash — it serves a page
 that says so, names the missing variables, and gives visitors your phone number.
@@ -87,8 +93,8 @@ that says so, names the missing variables, and gives visitors your phone number.
 
 ## Changing the capacity
 
-`EVENT_CAPACITY` counts **people, not registrations** — a registrant bringing a
-guest uses two seats.
+`EVENT_CAPACITY` is the number of seats on the boat. The form collects one
+person per registration, so one registration is one seat.
 
 - **Locally:** edit `EVENT_CAPACITY` in `.env` and restart `npm run dev`.
 - **In production:** Vercel → your project → *Settings* → *Environment
@@ -146,8 +152,8 @@ once the boat is back at the dock.
 ## Exporting the roster on the morning of the event
 
 1. Go to `https://<your-domain>/admin` and enter the passcode.
-2. Check the header: **Headcount** is the number to give the captain — it counts
-   guests. **Registrations** is lower, because some people bring one.
+2. Check the header: **Confirmed** is the number to give the captain.
+   **Registrations** includes anyone on the waitlist, so it can be higher.
 3. Click **Download CSV**. It saves as
    `middlebank-roster-YYYY-MM-DD.csv`, opens directly in Excel or Numbers, and
    contains every field including the waitlist column.
@@ -261,9 +267,11 @@ app/
   admin/page.tsx            passcode gate or roster
   admin/actions.ts          sign in / out, delete a row
 components/
-  SounderPanel.tsx          the depth-sounder schedule panel
+  Hero.tsx                  photo, host and sponsor billing, arrival callout
+  EventDetails.tsx          the three fact cards and the invitation prose
+  LocationMap.tsx           Google Maps embed and directions link
   RegistrationForm.tsx      form, waitlist, closed and confirmation states
-  SponsorBand.tsx           sponsor logos
+  Footer.tsx, icons.tsx     footer; the four inlined lucide-style icons
   admin/                    PasscodeGate, Roster
 lib/
   event.ts                  every fact about the trip; capacity from the env
@@ -273,16 +281,22 @@ lib/
   admin-auth.ts             passcode check and signed session cookie
   config.ts                 which required env vars are missing
   db.ts, format.ts
-  schema.ts                 the tables, applied automatically on first use
+  schema.ts                 the tables, applied automatically on first use;
+                            also migrates a table left by the first version
 scripts/                    migrate.ts, seed.ts
 ```
 
 ### Things that are the way they are for a reason
 
+**The form collects** name, company, job title, email, phone and dietary needs —
+matching the previous event site. Job title and dietary needs are optional;
+phone is required, because the plan is to text everyone the weather that
+morning.
+
 **Capacity is decided inside a transaction behind an advisory lock.** Two people
-submitting at the same instant cannot both claim the last seat. A party of two
-never splits across the capacity line — if both seats don't fit, the party
-waits.
+submitting at the same instant cannot both claim the last seat. Because the form
+no longer collects guests, one registration is one seat, so the confirmed count
+is the number to give the captain.
 
 **Duplicate emails are rejected case-insensitively**, via a unique index on
 `lower(email)`, so `Bob@x.com` cannot double-book against `bob@x.com`.

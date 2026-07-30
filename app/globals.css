@@ -1,63 +1,89 @@
 @import "tailwindcss";
 
 /*
- * Palette is grounded in Long Island Sound in late August, which is not blue —
- * it is turbid glacial silt and algal green-grey. Deliberately not nautical
- * navy. signal-500 is the only accent and only ever appears on a dark ground;
- * it fails contrast on deck-50.
- *
- * Measured contrast against deck-50: sound-900 21:1, sound-500 8.5:1,
- * shoal-400 4.8:1. Against sound-900: signal-500 9.1:1, dusk-400 6.7:1.
- * shoal-400 is tuned to clear 4.5:1 on the light ground, which makes it too
- * dark to be the muted tone inside the instrument panel — muted text there is
- * a tint of deck-50 instead (deck-50/55 measures 5.8:1).
+ * Palette and type ported from the previous "Cast Off with Presidio" event
+ * site, so this year's page reads as the same series.
  */
 @theme {
-  --color-sound-900: #0f1714;
-  --color-sound-500: #3a4a43;
-  --color-shoal-400: #5e6f66;
-  --color-signal-500: #efa637;
-  --color-dusk-400: #c08e9b;
-  --color-deck-50: #f2f4f1;
+  --color-navy-50: #e6ecf3;
+  --color-navy-100: #bfcddd;
+  --color-navy-200: #94aac3;
+  --color-navy-300: #6887a8;
+  --color-navy-400: #466e94;
+  --color-navy-500: #1f4a7a;
+  --color-navy-600: #163963;
+  --color-navy-700: #0f2c4d;
+  --color-navy-800: #0b1f3a;
+  --color-navy-900: #06132a;
 
-  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --color-ocean-50: #e6f7f9;
+  --color-ocean-100: #b8e9ee;
+  --color-ocean-200: #89dae3;
+  --color-ocean-300: #5bccd7;
+  --color-ocean-400: #2dbdcb;
+  --color-ocean-500: #0ea5b7;
+  --color-ocean-600: #0b8694;
+  --color-ocean-700: #086671;
+  --color-ocean-800: #05464e;
+  --color-ocean-900: #02272b;
+
+  --color-sand-50: #fdf9f0;
+  --color-sand-100: #f9efd9;
+  --color-sand-200: #f4e4c1;
+  --color-sand-300: #edd397;
+  --color-sand-400: #e3bd6c;
+  --color-sand-500: #d9a642;
+
+  --font-display: Georgia, "Times New Roman", serif;
+  --font-sans:
+    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background-color: var(--color-deck-50);
-  color: var(--color-sound-500);
   font-family: var(--font-sans);
+  color: var(--color-navy-800);
+  background-color: #ffffff;
 }
 
-/* Mono carries readouts and schedule figures, so lock the figures tabular. */
-.font-mono {
-  font-variant-numeric: tabular-nums;
+/* The hero's fallback ground, behind the photograph. */
+.bg-ocean-gradient {
+  background-image: linear-gradient(
+    135deg,
+    #06132a 0%,
+    #0b1f3a 40%,
+    #0b8694 100%
+  );
 }
 
 @layer base {
-  /* One focus treatment everywhere, legible on the page ground... */
   :focus-visible {
-    outline: 2px solid var(--color-sound-900);
+    outline: 3px solid var(--color-ocean-400);
     outline-offset: 2px;
-    border-radius: 2px;
+    border-radius: 4px;
   }
 
-  /* ...and switched to amber inside the dark instrument panel. */
+  /* On the dark hero, the ocean outline lacks contrast — use sand instead. */
   .on-dark :focus-visible,
   .on-dark:focus-visible {
-    outline-color: var(--color-signal-500);
+    outline-color: var(--color-sand-300);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }

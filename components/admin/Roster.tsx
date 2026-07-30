@@ -33,13 +33,12 @@ export function Roster({ registrations, capacity }: Props) {
 
   const stats = useMemo(() => {
     const confirmed = registrations.filter((r) => !r.waitlisted);
-    const headcount = confirmed.reduce((sum, r) => sum + r.guestCount, 0);
     return {
       registrations: registrations.length,
       waitlisted: registrations.length - confirmed.length,
-      headcount,
-      remaining: Math.max(0, capacity - headcount),
-      dietary: registrations.filter((r) => r.dietary).length,
+      headcount: confirmed.length,
+      remaining: Math.max(0, capacity - confirmed.length),
+      dietary: registrations.filter((r) => r.dietaryNeeds).length,
     };
   }, [registrations, capacity]);
 
@@ -107,17 +106,17 @@ export function Roster({ registrations, capacity }: Props) {
     <div className="mx-auto w-full max-w-[95rem] px-5 py-10 sm:px-8">
       <header className="flex flex-wrap items-baseline justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-sound-900">
+          <h1 className="font-display text-2xl font-bold tracking-tight text-navy-800">
             Roster
           </h1>
-          <p className="mt-1 font-mono text-[0.75rem] text-shoal-400">
+          <p className="mt-1 font-mono text-[0.75rem] text-navy-400">
             The Middlebank · Tue Aug 25
           </p>
         </div>
         <form action={signOut}>
           <button
             type="submit"
-            className="rounded-md px-3 py-1.5 font-sans text-[0.85rem] font-medium text-sound-900 underline decoration-shoal-400 underline-offset-4 hover:decoration-sound-900"
+            className="rounded-md px-3 py-1.5 font-sans text-[0.85rem] font-medium text-navy-800 underline decoration-navy-300 underline-offset-4 hover:decoration-navy-800"
           >
             Sign out
           </button>
@@ -125,12 +124,12 @@ export function Roster({ registrations, capacity }: Props) {
       </header>
 
       {/* ---------------------------------------------------------- stats */}
-      <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-shoal-400/20 sm:grid-cols-4">
+      <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-navy-100 sm:grid-cols-4">
         <Stat label="Registrations" value={stats.registrations}>
           {stats.waitlisted > 0 ? `${stats.waitlisted} on the waitlist` : null}
         </Stat>
-        <Stat label="Headcount" value={stats.headcount}>
-          Including guests
+        <Stat label="Confirmed" value={stats.headcount}>
+          Give this to the captain
         </Stat>
         <Stat label="Spots remaining" value={stats.remaining}>
           {`of ${capacity}`}
@@ -145,7 +144,7 @@ export function Roster({ registrations, capacity }: Props) {
         <div className="min-w-[16rem] flex-1">
           <label
             htmlFor="search"
-            className="block font-sans text-[0.85rem] font-medium text-sound-900"
+            className="block font-sans text-[0.85rem] font-medium text-navy-800"
           >
             Search name, company or email
           </label>
@@ -154,7 +153,7 @@ export function Roster({ registrations, capacity }: Props) {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="mt-1.5 w-full max-w-md rounded-md border-0 bg-white px-3.5 py-2 text-[0.9rem] text-sound-900 ring-1 ring-shoal-400/30 focus:ring-2 focus:ring-sound-900"
+            className="mt-1.5 w-full max-w-md rounded-md border-0 bg-white px-3.5 py-2 text-[0.9rem] text-navy-800 ring-1 ring-navy-200 focus:ring-2 focus:ring-ocean-500"
           />
         </div>
 
@@ -162,7 +161,7 @@ export function Roster({ registrations, capacity }: Props) {
           <button
             type="button"
             onClick={copyEmails}
-            className="rounded-md bg-white px-4 py-2 font-sans text-[0.85rem] font-medium text-sound-900 ring-1 ring-shoal-400/30 hover:ring-sound-900"
+            className="rounded-md bg-white px-4 py-2 font-sans text-[0.85rem] font-medium text-navy-800 ring-1 ring-navy-200 hover:ring-ocean-500"
           >
             {copyState === "copied"
               ? "Copied"
@@ -171,7 +170,7 @@ export function Roster({ registrations, capacity }: Props) {
           <button
             type="button"
             onClick={downloadCsv}
-            className="rounded-md bg-sound-900 px-4 py-2 font-display text-[0.85rem] font-semibold text-deck-50 hover:opacity-90"
+            className="rounded-md bg-ocean-600 px-4 py-2 font-display text-[0.85rem] font-semibold text-white hover:opacity-90"
           >
             Download CSV
           </button>
@@ -179,7 +178,7 @@ export function Roster({ registrations, capacity }: Props) {
       </div>
 
       {copyState === "failed" && (
-        <p role="alert" className="mt-3 text-[0.85rem] text-sound-900">
+        <p role="alert" className="mt-3 text-[0.85rem] text-navy-800">
           Your browser blocked clipboard access. Download the CSV instead, or
           select the email column by hand.
         </p>
@@ -188,17 +187,17 @@ export function Roster({ registrations, capacity }: Props) {
       {(deleteState.error || deleteState.deleted) && (
         <p
           role="alert"
-          className="mt-4 rounded-md bg-white px-4 py-2.5 text-[0.85rem] text-sound-900 ring-1 ring-shoal-400/30"
+          className="mt-4 rounded-md bg-white px-4 py-2.5 text-[0.85rem] text-navy-800 ring-1 ring-navy-200"
         >
           {deleteState.error ?? `Deleted ${deleteState.deleted}.`}
         </p>
       )}
 
       {/* ----------------------------------------------------------- table */}
-      <div className="mt-6 overflow-x-auto rounded-lg ring-1 ring-shoal-400/20">
+      <div className="mt-6 overflow-x-auto rounded-lg ring-1 ring-navy-100">
         <table className="w-full min-w-[70rem] border-collapse bg-white text-left">
           <thead>
-            <tr className="border-b border-shoal-400/25">
+            <tr className="border-b border-navy-100">
               <Th>Received</Th>
               <Th sort={sortStateFor("name")}>
                 <SortButton
@@ -216,12 +215,10 @@ export function Roster({ registrations, capacity }: Props) {
                   onClick={() => toggleSort("company")}
                 />
               </Th>
+              <Th>Job title</Th>
               <Th>Email</Th>
-              <Th>Mobile</Th>
-              <Th numeric>Party</Th>
-              <Th>Guest</Th>
-              <Th>Dietary</Th>
-              <Th>Notes</Th>
+              <Th>Phone</Th>
+              <Th>Dietary needs</Th>
               <Th>
                 <span className="sr-only">Actions</span>
               </Th>
@@ -231,8 +228,8 @@ export function Roster({ registrations, capacity }: Props) {
             {visible.length === 0 && (
               <tr>
                 <td
-                  colSpan={10}
-                  className="px-4 py-10 text-center text-[0.9rem] text-shoal-400"
+                  colSpan={8}
+                  className="px-4 py-10 text-center text-[0.9rem] text-navy-400"
                 >
                   {registrations.length === 0
                     ? "Nobody has signed up yet."
@@ -244,35 +241,31 @@ export function Roster({ registrations, capacity }: Props) {
             {visible.map((r) => (
               <tr
                 key={r.id}
-                className="border-b border-shoal-400/15 align-top last:border-0"
+                className="border-b border-navy-100 align-top last:border-0"
               >
                 <Td mono>{stamp(r.createdAt)}</Td>
                 <Td>
-                  <span className="font-medium text-sound-900">
+                  <span className="font-medium text-navy-800">
                     {r.fullName}
                   </span>
                   {r.waitlisted && (
-                    <span className="mt-0.5 block font-mono text-[0.65rem] uppercase tracking-[0.14em] text-shoal-400">
+                    <span className="mt-0.5 block font-mono text-[0.65rem] uppercase tracking-[0.14em] text-navy-400">
                       Waitlist
                     </span>
                   )}
                 </Td>
                 <Td>{r.company}</Td>
+                <Td>{orDash(r.jobTitle)}</Td>
                 <Td mono>
                   <a
                     href={`mailto:${r.email}`}
-                    className="underline decoration-shoal-400 underline-offset-2 hover:decoration-sound-900"
+                    className="underline decoration-navy-300 underline-offset-2 hover:decoration-navy-800"
                   >
                     {r.email}
                   </a>
                 </Td>
-                <Td mono>{r.mobile}</Td>
-                <Td mono numeric>
-                  {r.guestCount}
-                </Td>
-                <Td>{orDash(r.guestNames)}</Td>
-                <Td>{orDash(r.dietary)}</Td>
-                <Td>{orDash(r.notes)}</Td>
+                <Td mono>{orDash(r.phoneNumber)}</Td>
+                <Td>{orDash(r.dietaryNeeds)}</Td>
                 <Td>
                   {confirmingId === r.id ? (
                     <form action={deleteAction} className="flex gap-2">
@@ -281,14 +274,14 @@ export function Roster({ registrations, capacity }: Props) {
                       <button
                         type="submit"
                         disabled={deletePending}
-                        className="rounded px-2 py-1 text-[0.8rem] font-semibold text-sound-900 underline decoration-dusk-400 decoration-2 underline-offset-2 disabled:opacity-60"
+                        className="rounded px-2 py-1 text-[0.8rem] font-semibold text-navy-800 underline decoration-red-400 decoration-2 underline-offset-2 disabled:opacity-60"
                       >
                         {deletePending ? "Deleting…" : "Confirm"}
                       </button>
                       <button
                         type="button"
                         onClick={() => setConfirmingId(null)}
-                        className="rounded px-2 py-1 text-[0.8rem] text-shoal-400 hover:text-sound-900"
+                        className="rounded px-2 py-1 text-[0.8rem] text-navy-400 hover:text-navy-800"
                       >
                         Cancel
                       </button>
@@ -297,7 +290,7 @@ export function Roster({ registrations, capacity }: Props) {
                     <button
                       type="button"
                       onClick={() => setConfirmingId(r.id)}
-                      className="rounded px-2 py-1 text-[0.8rem] text-shoal-400 hover:text-sound-900"
+                      className="rounded px-2 py-1 text-[0.8rem] text-navy-400 hover:text-navy-800"
                     >
                       Delete
                     </button>
@@ -309,7 +302,7 @@ export function Roster({ registrations, capacity }: Props) {
         </table>
       </div>
 
-      <p className="mt-4 font-mono text-[0.7rem] text-shoal-400">
+      <p className="mt-4 font-mono text-[0.7rem] text-navy-400">
         Showing {visible.length} of {registrations.length}
       </p>
     </div>
@@ -327,14 +320,14 @@ function Stat({
 }) {
   return (
     <div className="bg-white px-5 py-4">
-      <dt className="font-mono text-[0.7rem] uppercase tracking-[0.16em] text-shoal-400">
+      <dt className="font-mono text-[0.7rem] uppercase tracking-[0.16em] text-navy-400">
         {label}
       </dt>
-      <dd className="mt-1.5 font-display text-3xl font-bold tracking-tight text-sound-900">
+      <dd className="mt-1.5 font-display text-3xl font-bold tracking-tight text-navy-800">
         {value}
       </dd>
       {children && (
-        <p className="mt-1 font-sans text-[0.75rem] text-shoal-400">
+        <p className="mt-1 font-sans text-[0.75rem] text-navy-400">
           {children}
         </p>
       )}
@@ -357,7 +350,7 @@ function SortButton({
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex items-center gap-1 font-mono text-[0.7rem] uppercase tracking-[0.16em] text-shoal-400 hover:text-sound-900"
+      className="inline-flex items-center gap-1 font-mono text-[0.7rem] uppercase tracking-[0.16em] text-navy-400 hover:text-navy-800"
     >
       {label}
       <span aria-hidden="true" className={active ? "" : "opacity-30"}>
@@ -381,7 +374,7 @@ function Th({
     <th
       scope="col"
       aria-sort={sort}
-      className={`px-4 py-3 font-mono text-[0.7rem] font-normal uppercase tracking-[0.16em] text-shoal-400 ${numeric ? "text-right" : ""}`}
+      className={`px-4 py-3 font-mono text-[0.7rem] font-normal uppercase tracking-[0.16em] text-navy-400 ${numeric ? "text-right" : ""}`}
     >
       {children}
     </th>
@@ -400,7 +393,7 @@ function Td({
 }) {
   return (
     <td
-      className={`px-4 py-3.5 text-[0.85rem] leading-snug text-sound-500 ${mono ? "font-mono whitespace-nowrap" : ""} ${numeric ? "text-right" : ""}`}
+      className={`px-4 py-3.5 text-[0.85rem] leading-snug text-navy-600 ${mono ? "font-mono whitespace-nowrap" : ""} ${numeric ? "text-right" : ""}`}
     >
       {children}
     </td>
@@ -424,13 +417,10 @@ function toCsv(rows: Registration[]): string {
     "Received",
     "Name",
     "Company",
+    "Job title",
     "Email",
-    "Mobile",
-    "Party size",
-    "Guest names",
-    "Dietary",
-    "Charter experience",
-    "Notes",
+    "Phone",
+    "Dietary needs",
     "Waitlisted",
   ];
 
@@ -439,17 +429,10 @@ function toCsv(rows: Registration[]): string {
       r.createdAt.toISOString(),
       r.fullName,
       r.company,
+      r.jobTitle,
       r.email,
-      r.mobile,
-      r.guestCount,
-      r.guestNames,
-      r.dietary,
-      r.charterExperience === "first_time"
-        ? "First time"
-        : r.charterExperience === "experienced"
-          ? "Done it before"
-          : null,
-      r.notes,
+      r.phoneNumber,
+      r.dietaryNeeds,
       r.waitlisted ? "yes" : "no",
     ]
       .map(csvCell)
