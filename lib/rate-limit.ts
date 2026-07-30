@@ -59,7 +59,7 @@ export async function checkRateLimit(
   ip: string,
 ): Promise<RateLimitResult> {
   const bucket = bucketFor(limit, ip);
-  const pool = db();
+  const pool = await db();
 
   // Housekeeping: drop anything already outside the longest window we use.
   // Cheap at this scale and it keeps the table from growing without bound.

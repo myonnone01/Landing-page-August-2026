@@ -52,14 +52,25 @@ export const EVENT = {
 
 export const FULL_ADDRESS = `${EVENT.venue}, ${EVENT.street}, ${EVENT.city}, ${EVENT.state} ${EVENT.zip}`;
 
-/** Total seats, counting hosts. Set EVENT_CAPACITY in the environment. */
+/** Used when EVENT_CAPACITY is unset, so a missing variable cannot break the page. */
+export const DEFAULT_CAPACITY = 50;
+
+/**
+ * Total seats, counting hosts. Override with EVENT_CAPACITY.
+ *
+ * A bad value falls back to the default and logs, rather than throwing — a typo
+ * in an environment variable should not take the registration page down.
+ */
 export function capacity(): number {
   const raw = process.env.EVENT_CAPACITY;
+  if (raw === undefined || raw.trim() === "") return DEFAULT_CAPACITY;
+
   const n = Number(raw);
-  if (!raw || !Number.isInteger(n) || n <= 0) {
-    throw new Error(
-      `EVENT_CAPACITY must be a positive integer, got ${JSON.stringify(raw)}. See .env.example.`,
+  if (!Number.isInteger(n) || n <= 0) {
+    console.error(
+      `[event] EVENT_CAPACITY must be a positive integer, got ${JSON.stringify(raw)}. Falling back to ${DEFAULT_CAPACITY}.`,
     );
+    return DEFAULT_CAPACITY;
   }
   return n;
 }

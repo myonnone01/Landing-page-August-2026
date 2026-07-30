@@ -59,7 +59,7 @@ function nullIfBlank(value: string | undefined): string | null {
 
 /** People confirmed aboard, counting guests. Excludes the waitlist. */
 export async function confirmedHeadcount(): Promise<number> {
-  const { rows } = await db().query<{ total: string | null }>(
+  const { rows } = await (await db()).query<{ total: string | null }>(
     "SELECT sum(guest_count) AS total FROM registrations WHERE NOT waitlisted",
   );
   return Number(rows[0]?.total ?? 0);
@@ -79,7 +79,7 @@ export async function createRegistration(
   input: RegistrationInput,
   capacity: number,
 ): Promise<CreateResult> {
-  const client = await db().connect();
+  const client = await (await db()).connect();
   try {
     await client.query("BEGIN");
     await client.query("SELECT pg_advisory_xact_lock($1)", [CAPACITY_LOCK]);
@@ -132,7 +132,7 @@ export async function createRegistration(
 
 /** Newest first. The admin page re-sorts client-side. */
 export async function listRegistrations(): Promise<Registration[]> {
-  const { rows } = await db().query<Row>(
+  const { rows } = await (await db()).query<Row>(
     "SELECT * FROM registrations ORDER BY created_at DESC",
   );
   return rows.map(toRegistration);
@@ -140,7 +140,7 @@ export async function listRegistrations(): Promise<Registration[]> {
 
 /** Returns false when the id matched nothing, so the caller can say so. */
 export async function deleteRegistration(id: string): Promise<boolean> {
-  const result = await db().query("DELETE FROM registrations WHERE id = $1", [
+  const result = await (await db()).query("DELETE FROM registrations WHERE id = $1", [
     id,
   ]);
   return (result.rowCount ?? 0) > 0;

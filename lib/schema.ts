@@ -1,5 +1,14 @@
--- Applied by `npm run db:migrate`. Safe to re-run.
-
+/**
+ * The database schema, as a string rather than a .sql file.
+ *
+ * It lives here so the app can apply it itself on first use — a file under
+ * db/ would not reliably be bundled into a serverless function, and forgetting
+ * to run a migration by hand is the single easiest way to end up with a site
+ * that 500s on its first real registration.
+ *
+ * Every statement is idempotent, so applying it repeatedly is a no-op.
+ */
+export const SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS registrations (
   id            uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at    timestamptz NOT NULL DEFAULT now(),
@@ -39,3 +48,4 @@ CREATE TABLE IF NOT EXISTS rate_limit_hits (
 
 CREATE INDEX IF NOT EXISTS rate_limit_hits_bucket_at_idx
   ON rate_limit_hits (bucket, at DESC);
+`;

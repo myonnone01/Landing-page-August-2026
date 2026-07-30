@@ -1,6 +1,8 @@
 import { RegistrationForm, type FormMode } from "@/components/RegistrationForm";
+import { SetupNotice } from "@/components/SetupNotice";
 import { SounderPanel } from "@/components/SounderPanel";
 import { SponsorBand } from "@/components/SponsorBand";
+import { missingEnvForPublicPage } from "@/lib/config";
 import { EVENT, FULL_ADDRESS, capacity, registrationClosed } from "@/lib/event";
 import { dateLong, time } from "@/lib/format";
 import { confirmedHeadcount } from "@/lib/registrations";
@@ -9,8 +11,26 @@ import { confirmedHeadcount } from "@/lib/registrations";
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
+  const missing = missingEnvForPublicPage();
+  if (missing.length > 0) {
+    return <SetupNotice missing={missing} />;
+  }
+
   const seats = capacity();
-  const seatsTaken = await confirmedHeadcount();
+
+  // The form is useless without the database, so an unreachable database gets
+  // an honest page with a working phone number rather than a stack trace.
+  let seatsTaken: number;
+  try {
+    seatsTaken = await confirmedHeadcount();
+  } catch (error) {
+    console.error(
+      "[page] could not read the headcount:",
+      error instanceof Error ? error.message : error,
+    );
+    return <SetupNotice missing={[]} />;
+  }
+
   const spotsLeft = Math.max(0, seats - seatsTaken);
 
   const mode: FormMode = registrationClosed()

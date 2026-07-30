@@ -30,10 +30,12 @@ Requires Node 20+.
 ```bash
 npm install
 cp .env.example .env      # then fill in DATABASE_URL and ADMIN_SESSION_SECRET
-npm run db:migrate        # create the tables
 npm run db:seed           # optional: five obviously-fake registrations
 npm run dev
 ```
+
+There is no migration step. The app applies its own schema on its first
+database call, so a fresh database just works.
 
 Then open **http://localhost:3000** and **http://localhost:3000/admin**.
 
@@ -66,15 +68,20 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 ## Environment variables
 
-All four are required. `.env` is gitignored; `.env.example` is the committed
-template.
+Three are required; `EVENT_CAPACITY` is optional. `.env` is gitignored;
+`.env.example` is the committed template.
 
-| Variable | What it does | Where its value comes from |
-| --- | --- | --- |
-| `DATABASE_URL` | Postgres connection string | Neon console → your project → *Connection Details* → pooled connection string. Locally, your own Postgres. |
-| `ADMIN_PASSCODE` | The passcode for `/admin` | You choose it. The one from the brief is set in `.env` locally; it is deliberately not written down here or in `.env.example`. |
-| `ADMIN_SESSION_SECRET` | Signs the admin session cookie | Generate with the command above. Changing it signs out anyone currently in `/admin`. |
-| `EVENT_CAPACITY` | Total seats, counting hosts | The boat's capacity. Currently `50`. |
+| Variable | Required | What it does | Where its value comes from |
+| --- | --- | --- | --- |
+| `DATABASE_URL` | yes | Postgres connection string | Neon console → your project → *Connection Details* → pooled connection string. Locally, your own Postgres. |
+| `ADMIN_PASSCODE` | yes | The passcode for `/admin` | You choose it. The one from the brief is set in `.env` locally; it is deliberately not written down here or in `.env.example`. |
+| `ADMIN_SESSION_SECRET` | yes | Signs the admin session cookie | Generate with the command above. Changing it signs out anyone currently in `/admin`. |
+| `EVENT_CAPACITY` | no | Total seats, counting hosts | Defaults to `50`. A missing or invalid value falls back to the default and logs, rather than taking the page down. |
+
+If a required variable is missing, the site does not crash — it serves a page
+that says so, names the missing variables, and gives visitors your phone number.
+`/admin` needs all three; the public registration page only needs
+`DATABASE_URL`, so a missing passcode never stops anyone signing up.
 
 ---
 
@@ -173,14 +180,10 @@ in that field; the values are in the `Dietary` column of the CSV.
    - `ADMIN_SESSION_SECRET` (generate a fresh one — do not reuse the local value)
    - `EVENT_CAPACITY`
 5. **Deploy.**
-6. **Create the tables.** The schema is not applied automatically. Run it once
-   against the production database from your machine:
-   ```bash
-   DATABASE_URL="<production pooled string>" npm run db:migrate
-   ```
-7. **Check it.** Visit `/`, submit one real registration, confirm it appears at
-   `/admin`, then delete it with the row's **Delete** button.
-8. **Do not seed production.** `npm run db:seed` is for development.
+6. **Check it.** Visit `/`, submit one real registration, confirm it appears at
+   `/admin`, then delete it with the row's **Delete** button. The tables create
+   themselves on that first visit — there is no migration to run.
+7. **Do not seed production.** `npm run db:seed` is for development.
 
 ### After the trip
 
@@ -268,8 +271,9 @@ lib/
   registrations.ts          queries
   rate-limit.ts             Postgres sliding window
   admin-auth.ts             passcode check and signed session cookie
+  config.ts                 which required env vars are missing
   db.ts, format.ts
-db/schema.sql               the tables
+  schema.ts                 the tables, applied automatically on first use
 scripts/                    migrate.ts, seed.ts
 ```
 
@@ -312,7 +316,7 @@ and `555` numbers so they're unmistakable if they ever reach a real database.
 | `npm run build` | Production build |
 | `npm run start` | Serve the production build |
 | `npm run lint` | ESLint |
-| `npm run db:migrate` | Apply `db/schema.sql` (safe to re-run) |
+| `npm run db:migrate` | Apply the schema explicitly. Rarely needed — the app self-applies. Safe to re-run |
 | `npm run db:seed` | Add five fake registrations |
 | `npm run db:seed -- --reset` | Wipe the table first, then seed |
 
