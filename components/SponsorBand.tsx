@@ -3,50 +3,67 @@ import Image from "next/image";
 /**
  * Sponsor billing, deliberately secondary to Presidio.
  *
- * OPTICAL SIZING — the two marks are different shapes, so they are not sized to
- * a shared width or a shared height. Komprise is a 200x200 stacked square;
- * Illumio is a 738x186 horizontal lockup, near 4:1. Matching heights would give
- * Illumio roughly four times the area; matching widths would tower Komprise.
- * These heights sit between equal-height and equal-area, leaning toward equal
- * area, which is what actually reads as balanced. They align on a shared
- * baseline via `items-end`.
+ * OPTICAL SIZING — the two marks are different shapes, so they are sized to
+ * neither a shared width nor a shared height. Komprise is a 200x200 stacked
+ * square; Illumio is a 738x186 horizontal lockup, near 4:1.
+ *
+ * The sizes below come from measuring the actual ink in each file rather than
+ * from their bounding boxes, which mislead: Komprise carries ~15% padding on
+ * every side, so its ink is only 182x141, while Illumio's ink fills its file
+ * edge to edge.
+ *
+ * Reference points, with Illumio at 34px:
+ *   equal ink height    -> Komprise 49px   (Komprise reads clearly subordinate)
+ *   equal ink bbox area -> Komprise 85px   (balanced)
+ *   equal ink mass      -> Komprise 103px  (Komprise starts to dominate)
+ *   equal wordmark size -> Komprise 222px  (absurd, and worth knowing why:
+ *     Komprise is icon-dominant, its wordmark is 7.5% of the file height,
+ *     against 49% for Illumio's. Their wordmarks cannot match without one
+ *     mark swallowing the band — so overall presence is the right target.)
+ *
+ * 84px was picked by rendering the candidates side by side and choosing.
  *
  * TRADEMARKS — these are other companies' marks. They render as supplied: no
- * recolor, no crop, no filter, no rounding, on a plain white ground. `unoptimized`
- * keeps Next from recompressing them.
+ * recolor, no crop, no filter, no rounding, on a plain white ground.
+ * `unoptimized` keeps Next from recompressing them.
  */
 type Sponsor = {
   name: string;
   href: string;
-  /**
-   * Drop the supplied file into `public/logos/` and set `src` to its path to
-   * swap the placeholder for the real mark. Files were not included in the
-   * brief's `./logos/` directory, so both are placeholders for now.
-   */
-  src: string | null;
+  src: string;
   /** Natural pixel dimensions of the supplied file. */
   width: number;
   height: number;
   /** Rendered height in px, chosen optically. See the note above. */
   renderHeight: number;
+  /**
+   * Fraction of the file's height that is empty below the ink.
+   *
+   * Needed for the shared baseline: `items-end` aligns file edges, not ink, so
+   * a mark with bottom padding would float above its neighbour's floor.
+   * Measured from the files — Komprise ends its ink 30px above its lower edge.
+   */
+  inkBottomInset: number;
 };
 
 const SPONSORS: Sponsor[] = [
   {
     name: "Komprise",
     href: "https://komprise.com",
-    src: null, // -> "/logos/komprise-logo.jpg"
+    src: "/logos/komprise-logo.jpg",
     width: 200,
     height: 200,
-    renderHeight: 64,
+    renderHeight: 84,
+    inkBottomInset: 30 / 200,
   },
   {
     name: "Illumio",
     href: "https://illumio.com",
-    src: null, // -> "/logos/illumio-logo.png"
+    src: "/logos/illumio-logo.png",
     width: 738,
     height: 186,
-    renderHeight: 36,
+    renderHeight: 34,
+    inkBottomInset: 0,
   },
 ];
 
@@ -99,16 +116,11 @@ function SponsorMark({ sponsor }: { sponsor: Sponsor }) {
     sponsor.renderHeight * (sponsor.width / sponsor.height),
   );
 
-  if (!sponsor.src) {
-    return (
-      <span
-        style={{ width: renderWidth, height: sponsor.renderHeight }}
-        className="flex items-center justify-center border border-dashed border-shoal-400/50 text-center font-mono text-[0.6rem] uppercase tracking-[0.14em] text-shoal-400"
-      >
-        {sponsor.name}
-      </span>
-    );
-  }
+  // Pull the mark down by its own empty bottom padding so the ink — not the
+  // file edge — sits on the shared baseline.
+  const baselineShift = Math.round(
+    sponsor.renderHeight * sponsor.inkBottomInset,
+  );
 
   return (
     <Image
@@ -117,7 +129,11 @@ function SponsorMark({ sponsor }: { sponsor: Sponsor }) {
       width={sponsor.width}
       height={sponsor.height}
       unoptimized
-      style={{ width: renderWidth, height: sponsor.renderHeight }}
+      style={{
+        width: renderWidth,
+        height: sponsor.renderHeight,
+        marginBottom: -baselineShift,
+      }}
     />
   );
 }

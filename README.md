@@ -19,7 +19,7 @@ system is this app and one Postgres database.
 | --- | --- | --- |
 | Host mobile number | `lib/event.ts` → `EVENT.contact.mobile` | Set to `(203) 450-7593`. |
 | Host name and email | `lib/event.ts` → `EVENT.contact` | Defaulted to Mike Yonnone / mike.yonnone@gmail.com. Swap for a Presidio address if that should carry the invitation. |
-| Sponsor logos | `components/SponsorBand.tsx` → `SPONSORS[].src` | **Placeholders.** See [Sponsor logos](#sponsor-logos). |
+| Sponsor logos | `public/logos/` | Both in place. |
 
 ---
 
@@ -192,32 +192,40 @@ contact details, which is the cleanest way to stop holding them.
 ## Sponsor logos
 
 Komprise and Illumio are sponsors, styled as a secondary band rather than
-co-host billing. The brief said the files would be in `./logos/`; that directory
-was not present, so both currently render as correctly-sized dashed
-placeholders.
+co-host billing. Both files live in `public/logos/`, and the sizing lives in
+`components/SponsorBand.tsx`.
 
-To drop the real files in:
+**Why the two logos are deliberately different heights.** Komprise is a 200×200
+stacked square; Illumio is a 738×186 horizontal lockup, close to 4:1. Sized to a
+shared height, Illumio gets roughly four times the area; sized to a shared
+width, Komprise towers. So they are sized by measured ink instead — the file
+bounding boxes mislead, because Komprise carries about 15% padding on every side
+(its ink is only 182×141) while Illumio's ink runs to its file edges.
 
-1. Copy `komprise-logo.jpg` and `illumio-logo.png` into `public/logos/`.
-2. In `components/SponsorBand.tsx`, set each sponsor's `src`:
-   ```ts
-   src: "/logos/komprise-logo.jpg",   // Komprise
-   src: "/logos/illumio-logo.png",    // Illumio
-   ```
+With Illumio at 34px, the reference points are:
 
-Nothing else needs changing — the sizes are already set.
+| Target | Komprise | Reads as |
+| --- | --- | --- |
+| Equal ink height | 49px | Komprise clearly subordinate |
+| **Equal ink bbox area** | **85px** | **balanced — what's used (84px)** |
+| Equal ink mass | 103px | Komprise starts to dominate |
+| Equal wordmark size | 222px | absurd |
 
-**Why the two logos are different heights on purpose.** Komprise is a 200×200
-stacked square; Illumio is a 738×186 horizontal lockup, close to 4:1. Matching
-their heights would give Illumio roughly four times the visual area, and
-matching their widths would tower Komprise. The rendered heights (64px and 36px)
-sit between equal-height and equal-area, leaning toward equal area, which is
-what actually reads as balanced. They align on a shared baseline.
+That last row is worth understanding before anyone "fixes" the sizes: Komprise
+is an icon-dominant mark whose wordmark is only 7.5% of its file height, against
+49% for Illumio's. The two wordmarks cannot be made the same size without one
+mark swallowing the band, so overall presence is the right target, not type size.
+The final 84px was chosen by rendering the candidates side by side and looking.
+
+They align on a shared **ink** baseline, not a shared file edge — Komprise is
+pulled down by its own bottom padding (`inkBottomInset`), because otherwise it
+floats about 13px above Illumio's floor.
 
 Both marks render exactly as supplied — no recolor, crop, filter or rounding, on
 a plain white ground, with Next's image optimizer disabled so nothing
-recompresses them. They belong to other companies; please keep it that way if
-you adjust this section.
+recompresses them. Komprise is a JPEG with a white background, which is part of
+why the band is white: it blends invisibly. They belong to other companies;
+please keep it that way if you adjust this section.
 
 ---
 
