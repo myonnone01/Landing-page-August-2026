@@ -128,8 +128,8 @@ export function Hero() {
 
         {/* The one fact nobody can afford to skim past. */}
         <p className="mt-5 max-w-xl rounded-lg bg-sand-300/95 px-5 py-3 text-sm font-semibold text-navy-900 sm:text-base">
-          Be at the dock by {time(EVENT.arriveBy)}. The boat leaves at{" "}
-          {time(EVENT.sailAt)} with or without you.
+          Please be at the dock by {time(EVENT.arriveBy)}. The boat departs at{" "}
+          {time(EVENT.sailAt)}.
         </p>
 
         <a
