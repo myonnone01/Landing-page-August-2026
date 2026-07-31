@@ -24,7 +24,7 @@ system is this app and one Postgres database.
 | What | Where | Status |
 | --- | --- | --- |
 | Host mobile number | `lib/event.ts` → `EVENT.contact.mobile` | Set to `(203) 450-7593`. |
-| Host name and email | `lib/event.ts` → `EVENT.contact` | Defaulted to Mike Yonnone / mike.yonnone@gmail.com. Swap for a Presidio address if that should carry the invitation. |
+| Host name and email | `lib/event.ts` → `EVENT.contact` | Mike Yonnone / myonnone@presidio.com. |
 | Sponsor logos | `public/logos/` | Komprise and Illumio, both in place. |
 
 ---

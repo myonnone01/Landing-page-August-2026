@@ -61,11 +61,6 @@ export function EventDetails() {
             {EVENT.provided}
             {" are provided — no experience needed."}
           </p>
-          <p className="mt-4 text-base leading-relaxed text-navy-600 sm:text-lg">
-            Wear soft-soled shoes and bring a layer for when the sun drops, plus
-            sunglasses and sunscreen. We sail rain or shine; only unsafe
-            conditions cancel, and you&apos;ll get a text if that happens.
-          </p>
         </div>
       </div>
     </section>

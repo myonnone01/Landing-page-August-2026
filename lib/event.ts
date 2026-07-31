@@ -47,7 +47,7 @@ export const EVENT = {
 
   contact: {
     name: "Mike Yonnone",
-    email: "mike.yonnone@gmail.com",
+    email: "myonnone@presidio.com",
     mobile: "(203) 450-7593",
   },
 
