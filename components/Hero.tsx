@@ -25,7 +25,7 @@ const SPONSORS = [
     src: "/logos/komprise-logo.jpg",
     width: 200,
     height: 200,
-    logoClass: "h-14 w-auto object-contain",
+    logoClass: "h-18 w-auto object-contain",
   },
   {
     name: "Illumio",
@@ -33,7 +33,7 @@ const SPONSORS = [
     src: "/logos/illumio-logo.png",
     width: 738,
     height: 186,
-    logoClass: "h-6 w-auto object-contain",
+    logoClass: "h-7 w-auto object-contain",
   },
 ];
 
@@ -88,7 +88,7 @@ export function Hero() {
                   href={sponsor.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-20 w-52 items-center justify-center rounded-md bg-white px-4 py-3 shadow-lg transition hover:shadow-xl"
+                  className="flex h-24 w-52 items-center justify-center rounded-md bg-white px-4 py-3 shadow-lg transition hover:shadow-xl"
                 >
                   <Image
                     src={sponsor.src}
