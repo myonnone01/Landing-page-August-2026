@@ -8,7 +8,8 @@ import { missingEnvForPublicPage } from "@/lib/config";
 import { capacity, registrationClosed } from "@/lib/event";
 import { confirmedHeadcount } from "@/lib/registrations";
 
-// "Spots left" has to be live, so the page is never served from a cache.
+// The waitlist switch depends on the live count, so never serve from a cache.
+// The remaining count itself is deliberately not shown to the public.
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
@@ -45,7 +46,7 @@ export default async function Page() {
       <Hero />
       <EventDetails />
       <LocationMap />
-      <RegistrationForm mode={mode} spotsLeft={spotsLeft} />
+      <RegistrationForm mode={mode} />
       <Footer />
     </main>
   );

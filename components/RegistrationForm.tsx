@@ -8,7 +8,6 @@ export type FormMode = "open" | "waitlist" | "closed";
 
 type Props = {
   mode: FormMode;
-  spotsLeft: number;
 };
 
 type FieldErrors = Record<string, string>;
@@ -20,7 +19,7 @@ const inputClass =
 
 const labelClass = "block text-sm font-semibold text-navy-800";
 
-export function RegistrationForm({ mode, spotsLeft }: Props) {
+export function RegistrationForm({ mode }: Props) {
   const [pending, setPending] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -81,8 +80,7 @@ export function RegistrationForm({ mode, spotsLeft }: Props) {
           </h2>
           {mode === "open" && !submitted && (
             <p className="mt-3 text-navy-600">
-              RSVP by {EVENT.rsvpDeadlineLabel}. {spotsLeft}{" "}
-              {spotsLeft === 1 ? "spot" : "spots"} left.
+              RSVP by {EVENT.rsvpDeadlineLabel}.
             </p>
           )}
         </div>
