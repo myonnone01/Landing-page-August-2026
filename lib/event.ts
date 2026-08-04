@@ -54,6 +54,7 @@ export const EVENT = {
   sponsors: [
     { name: "Komprise", href: "https://komprise.com" },
     { name: "Illumio", href: "https://illumio.com" },
+    { name: "Silk", href: "https://silk.us" },
   ],
 } as const;
 

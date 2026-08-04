@@ -3,7 +3,7 @@ import "./globals.css";
 import { EVENT } from "@/lib/event";
 import { dateLong } from "@/lib/format";
 
-const DESCRIPTION = `Join ${EVENT.host} for an exclusive charter fishing trip on Long Island Sound. ${dateLong(EVENT.sailAt)} at ${EVENT.venue}, ${EVENT.city}, ${EVENT.state}. Sponsored by Komprise and Illumio.`;
+const DESCRIPTION = `Join ${EVENT.host} for an exclusive charter fishing trip on Long Island Sound. ${dateLong(EVENT.sailAt)} at ${EVENT.venue}, ${EVENT.city}, ${EVENT.state}. Sponsored by Komprise, Illumio and Silk.`;
 
 export const metadata: Metadata = {
   title: `${EVENT.title} | Charter Fishing Event — August 25, 2026`,

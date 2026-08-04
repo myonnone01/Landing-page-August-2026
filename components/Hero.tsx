@@ -16,9 +16,26 @@ import { dateLong, time } from "@/lib/format";
  * Last year both sponsors were wide lockups, so one height suited both.
  * Komprise is a square stacked mark — at Illumio's height it reads as a
  * quarter of the size. Measuring the ink in both files put the balance point
- * near a 2.4:1 height ratio, which is what these two classes are.
+ * near a 2.4:1 height ratio, which is what those two classes are.
+ *
+ * Silk is a third shape again: a square that bleeds colour to its own edges,
+ * with no internal white. A solid block reads heavier than a mark of the same
+ * height carrying whitespace, so it is set smaller than Komprise rather than
+ * matched to it. That size is an estimate until the real file can be measured.
  */
-const SPONSORS = [
+type Sponsor = {
+  name: string;
+  href: string;
+  /** null until the supplied file is in public/logos/. */
+  src: string | null;
+  width: number;
+  height: number;
+  logoClass: string;
+  /** Rendered size of the placeholder, matching the real mark's footprint. */
+  placeholder: { width: number; height: number };
+};
+
+const SPONSORS: Sponsor[] = [
   {
     name: "Komprise",
     href: "https://komprise.com",
@@ -26,6 +43,7 @@ const SPONSORS = [
     width: 200,
     height: 200,
     logoClass: "h-18 w-auto object-contain",
+    placeholder: { width: 72, height: 72 },
   },
   {
     name: "Illumio",
@@ -34,8 +52,47 @@ const SPONSORS = [
     width: 738,
     height: 186,
     logoClass: "h-7 w-auto object-contain",
+    placeholder: { width: 111, height: 28 },
+  },
+  {
+    name: "Silk",
+    href: "https://silk.us",
+    // -> "/logos/silk-logo.png" once the file is in public/logos/
+    src: null,
+    width: 400,
+    height: 400,
+    logoClass: "h-14 w-auto object-contain",
+    placeholder: { width: 56, height: 56 },
   },
 ];
+
+/**
+ * Renders the supplied mark, or a neutral outline at the same footprint while
+ * a file is still missing — a broken image icon on the hero would be worse.
+ */
+function SponsorMark({ sponsor }: { sponsor: Sponsor }) {
+  if (!sponsor.src) {
+    return (
+      <span
+        style={sponsor.placeholder}
+        className="flex items-center justify-center rounded border border-dashed border-navy-300 text-[0.65rem] font-semibold tracking-[0.12em] text-navy-400 uppercase"
+      >
+        {sponsor.name}
+      </span>
+    );
+  }
+
+  return (
+    <Image
+      src={sponsor.src}
+      alt={`${sponsor.name} logo`}
+      width={sponsor.width}
+      height={sponsor.height}
+      unoptimized
+      className={sponsor.logoClass}
+    />
+  );
+}
 
 export function Hero() {
   return (
@@ -76,28 +133,23 @@ export function Hero() {
           <span className="mb-3 text-xs font-medium uppercase tracking-[0.3em] text-white/70">
             Proudly Sponsored By
           </span>
-          <ul className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
+          {/* Wraps rather than stacking: three tiles in one column would push
+              the headline off a phone screen. */}
+          <ul className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
             {SPONSORS.map((sponsor) => (
               <li key={sponsor.name}>
                 {/* Each mark keeps its own aspect ratio inside a shared tile,
-                    so neither is stretched and both sit on one baseline. */}
-                {/* Opaque white, not white/95 — the Komprise file is a JPEG
+                    so none is stretched and all sit on one baseline.
+                    Opaque white, not white/95 — the Komprise file is a JPEG
                     with a baked-in white ground, which would show as a panel
                     against a translucent tile. */}
                 <a
                   href={sponsor.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-24 w-52 items-center justify-center rounded-md bg-white px-4 py-3 shadow-lg transition hover:shadow-xl"
+                  className="flex h-20 w-40 items-center justify-center rounded-md bg-white px-3 py-2.5 shadow-lg transition hover:shadow-xl sm:h-24 sm:w-52 sm:px-4 sm:py-3"
                 >
-                  <Image
-                    src={sponsor.src}
-                    alt={`${sponsor.name} logo`}
-                    width={sponsor.width}
-                    height={sponsor.height}
-                    unoptimized
-                    className={sponsor.logoClass}
-                  />
+                  <SponsorMark sponsor={sponsor} />
                   <span className="sr-only">— opens in a new tab</span>
                 </a>
               </li>
