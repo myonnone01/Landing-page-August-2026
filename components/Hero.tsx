@@ -18,10 +18,13 @@ import { dateLong, time } from "@/lib/format";
  * quarter of the size. Measuring the ink in both files put the balance point
  * near a 2.4:1 height ratio, which is what those two classes are.
  *
- * Silk is a third shape again: a square that bleeds colour to its own edges,
- * with no internal white. A solid block reads heavier than a mark of the same
- * height carrying whitespace, so it is set smaller than Komprise rather than
- * matched to it. That size is an estimate until the real file can be measured.
+ * Silk is a third shape again: a square that bleeds colour to its own edges —
+ * measured at 100% coverage, no padding at all. The metrics disagree wildly on
+ * it: equal ink mass says 30px, matching Illumio's wordmark x-height says 36px,
+ * equal ink bounding-box area says 58px. Rendered side by side, the small end
+ * looks timid and anything past ~50px lets the saturated magenta dominate two
+ * mostly-white neighbours. 44px is where its wordmark carries the same weight
+ * as "komprise" and "illumio" without the block shouting.
  */
 type Sponsor = {
   name: string;
@@ -57,12 +60,11 @@ const SPONSORS: Sponsor[] = [
   {
     name: "Silk",
     href: "https://silk.us",
-    // -> "/logos/silk-logo.png" once the file is in public/logos/
-    src: null,
+    src: "/logos/silk-logo.png",
     width: 400,
     height: 400,
-    logoClass: "h-14 w-auto object-contain",
-    placeholder: { width: 56, height: 56 },
+    logoClass: "h-11 w-auto object-contain",
+    placeholder: { width: 44, height: 44 },
   },
 ];
 
