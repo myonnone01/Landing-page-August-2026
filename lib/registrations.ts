@@ -104,7 +104,9 @@ export async function createRegistration(
         input.company,
         nullIfBlank(input.jobTitle),
         input.email,
-        input.phoneNumber,
+        // Blank rather than absent when the field is left empty, so it has to
+        // become NULL here or the roster shows nothing instead of an em dash.
+        nullIfBlank(input.phoneNumber),
         nullIfBlank(input.dietaryNeeds),
         waitlisted,
       ],

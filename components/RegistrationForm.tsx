@@ -136,9 +136,8 @@ export function RegistrationForm({ mode }: Props) {
                     name="phoneNumber"
                     label="Phone Number"
                     type="tel"
-                    required
                     autoComplete="tel"
-                    hint="For weather and dock texts on the day."
+                    hint="If you'd like weather and dock texts on the day."
                     error={fieldErrors.phoneNumber}
                   />
                 </div>

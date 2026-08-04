@@ -36,20 +36,21 @@ export const registrationSchema = z.object({
     .pipe(z.email("That doesn't look like an email address.")),
 
   /**
-   * Required here, though it was optional last year — the day-of plan is to
-   * text everyone the weather and any dock changes.
+   * Optional, as it was last year. Still format-checked when given, so a
+   * half-typed number is caught rather than stored — an unreachable number is
+   * worse than a blank one.
    */
   phoneNumber: z
     .string()
     .trim()
-    .min(1, "Please add a phone number — we text the weather that morning.")
-    .refine(
-      (value) => {
-        const digits = value.replace(/\D/g, "");
-        return digits.length >= 10 && digits.length <= 15;
-      },
-      "Please enter a number with area code, like (203) 555-0142.",
-    ),
+    .max(30, "That number is too long.")
+    .refine((value) => {
+      if (value === "") return true;
+      const digits = value.replace(/\D/g, "");
+      return digits.length >= 10 && digits.length <= 15;
+    }, "Please enter a number with area code, like (203) 555-0142.")
+    .optional()
+    .or(z.literal("")),
 
   dietaryNeeds: z
     .string()
