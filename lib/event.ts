@@ -32,12 +32,15 @@ export const EVENT = {
   arriveBy: `2026-08-25T15:30:00${EDT_OFFSET}`,
 
   /**
-   * Registration closes at the end of this day, Eastern. The brief said
-   * "Friday, August 15" but Aug 15 2026 is a Saturday; confirmed as Friday
-   * Aug 14. Stored as the first instant that is too late.
+   * Registration stays open until the boat pulls away — the same instant as
+   * sailAt, so signing up is possible right through the day of the trip.
+   *
+   * Deliberately not the end of Aug 25: the boat is back at the dock by 8:00
+   * PM, so a registration taken that evening could not be honoured. This is
+   * the first instant that is too late.
    */
-  rsvpClosesAt: `2026-08-15T00:00:00${EDT_OFFSET}`,
-  rsvpDeadlineLabel: "Friday, August 14",
+  rsvpClosesAt: `2026-08-25T16:00:00${EDT_OFFSET}`,
+  rsvpDeadlineLabel: "Tuesday, August 25",
 
   /**
    * Catering and drinks were confirmed as carrying over from last year's

@@ -12,7 +12,7 @@ Komprise and Illumio.
 - **Boat:** The Middlebank, Middlebank Sport Fishing
 - **Where:** Captain's Cove Seaport, 1 Bostwick Ave, Bridgeport, CT 06605
 - **When:** Tuesday, August 25 2026 — at the dock by 3:30 PM, sails 4:00 PM, back by 8:00 PM
-- **RSVP closes:** end of day Friday, August 14 2026
+- **RSVP closes:** when the boat sails, 4:00 PM Tuesday, August 25 2026
 
 No email sending, no notifications, no third-party integrations. The whole
 system is this app and one Postgres database.
@@ -250,9 +250,11 @@ Daylight Time, which is what late August is) and rendered through
 `Intl.DateTimeFormat` pinned to `America/New_York`, so the boat sails on Eastern
 time no matter where the server or the reader sits.
 
-> **Note on the RSVP date.** The brief said "Friday, August 15", but August 15
-> 2026 is a Saturday. Confirmed as **Friday, August 14**, which is what the code
-> uses. Registration closes at midnight Eastern as Friday ends.
+> **Note on the RSVP cutoff.** Registration stays open right through the day of
+> the trip and closes the moment the boat sails, 4:00 PM Eastern on August 25.
+> It is deliberately not the end of that day — the boat is back at the dock by
+> 8:00 PM, so a signup taken that evening could not be honoured. Change it in
+> `lib/event.ts` via `rsvpClosesAt` and `rsvpDeadlineLabel`.
 
 ---
 
